@@ -172,7 +172,7 @@
 
 <div>
 
-    <input type="text" id="inputBar" on:keyup={ () => {filterTable()} } placeholder="Search for names..">
+    <input type="text" id="inputBar" on:keyup={ () => {filterTable()} } placeholder="Search by name, platform, device ID, or device code...">
 
     <table id="devicetable">
         <tr>

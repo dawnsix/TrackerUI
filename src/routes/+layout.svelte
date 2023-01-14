@@ -1,2 +1,2 @@
-<h4>transpire device table - supabase</h4>
+<h4>transpire device table - supabase dev branch</h4>
 <slot></slot>
