@@ -13,7 +13,7 @@
     let inEdit = false
     let editIdx = 0
     let tableHeaders = ["Device ID","Passcode","Allocation ID", "OS","OS Version","Date Confirmed",
-        "Model","In Use?","Project","Transpire Code","Allocation","DeviceCode","ScreenSize"]
+        "Model","In Use?","Project","Allocation","DeviceCode","ScreenSize"]
     let headers = ["DeviceID","Passcode","AllocationID", "OS","OSVersion","DateConfirmed",
         "Model","InUse","Project","TranspireCode","Allocation","DeviceCode","ScreenSize"]
 
@@ -138,9 +138,42 @@
 
     }
 
+    function filterTable() {
+        
+        var input, filter, table, tr, td, i, txtValue, trows
+        input = document.getElementById("inputBar")
+        filter = input.value.toUpperCase()
+        table = document.getElementById("devicetable")
+        tr = table.getElementsByTagName("tr")
+
+        // depends on column order
+        for (i = 1; i < tr.length; i++) {
+            trows = tr[i].getElementsByTagName("td")
+            td = trows[0].innerText + 
+                trows[3].innerText + 
+                trows[6].innerText + 
+                trows[8].innerText + 
+                trows[9].innerText + 
+                trows[10].innerText
+
+            if (td) {
+                txtValue = td
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = ""
+                } else {
+                    tr[i].style.display = "none"
+                }
+            }
+        }
+
+    }
+
 </script>
 
 <div>
+
+    <input type="text" id="inputBar" on:keyup={ () => {filterTable()} } placeholder="Search for names..">
+
     <table id="devicetable">
         <tr>
             {#each tableHeaders as hdr}
@@ -160,7 +193,7 @@
                 <td>{device.Model}</td>
                 <td>{device.InUse}</td>
                 <td>{device.Project}</td>
-                <td>{device.TranspireCode}</td>
+                <td style="display:none;">{device.TranspireCode}</td>
                 <td>{device.Allocation}</td>
                 <td>{device.DeviceCode}</td>
                 <td>{device.ScreenSize}</td>
@@ -179,6 +212,16 @@
 </div>
 
 <style>
+
+    #inputBar {
+      background-position: 10px 12px; /* Position the search icon */
+      background-repeat: no-repeat; /* Do not repeat the icon image */
+      width: 50%; /* Full-width */
+      font-size: 16px; /* Increase font-size */
+      padding: 12px 20px 12px 40px; /* Add some padding */
+      border: 1px solid #ddd; /* Add a grey border */
+      margin-bottom: 12px; /* Add some space below the input */
+    }
 
     :global(.killrow) {
       -webkit-filter: blur(2px);

@@ -1,6 +1,5 @@
 
-import { VITE_API_KEY } from '$env/static/private'
-import { VITE_HOST_DOMAIN } from '$env/static/private'
+import { VITE_API_KEY, VITE_HOST_DOMAIN } from '$env/static/private'
 import { deviceDataStore } from '../stores/deviceStore.js';
 
 export const load = () => {
