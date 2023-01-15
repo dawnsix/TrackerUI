@@ -1,22 +1,43 @@
+import { fail } from "@sveltejs/kit";
+import { compute_rest_props } from "svelte/internal";
+import { redirect } from '@sveltejs/kit'
+import { page } from "$app/stores";
 
-import { VITE_API_KEY, VITE_HOST_DOMAIN } from '$env/static/private'
-import { deviceDataStore } from '../stores/deviceStore.js';
+console.log('running login handler @ page.server.js')
 
-export const load = () => {
+export const actions = {
 
-    const fetchDevices = async () => {
+    default: async ({request, locals}) => {
+        const body = Object.fromEntries(await request.formData())
 
-        // once you get auth working between app and API, try move this to onmount and run on client
- 
-        const res = await fetch(`https://${VITE_HOST_DOMAIN}/live/getdevices`, {
-            headers: {'X-API-KEY': `${VITE_API_KEY}`}
+        console.log(body.email)
+        console.log(body.password)
+
+        console.log(body)
+        const { data, error } = await locals.sb.auth.signInWithPassword({
+            email: body.email,
+            password: body.password
         })
 
-        const data = await res.json()    
-        return data.body
+        if(error) {
+            /*
+            if(err.status === 400) {
+                return fail(400, {
+                    error: 'Invalid Credentials'
+                })
+            }
+
+            return fail(500, {
+                message: 'Server error. Try again later.'
+            })
+            */
+
+            console.log("login failed")
+            //return redirect(303, '/')
+            return { success: false };
+        }
+
+        console.log("login successful")
+        throw redirect(303, '/devicemanager')
     }
-    
-    return {
-        devices: fetchDevices()
-    }
-}
+  }

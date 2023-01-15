@@ -1,0 +1,30 @@
+import { redirect } from '@sveltejs/kit'
+
+export const actions = {
+
+    default: async ({locals}) => {
+        
+        const { error } = await locals.sb.auth.signOut()
+
+        if(error) {
+            /*
+            if(err.status === 400) {
+                return fail(400, {
+                    error: 'Invalid Credentials'
+                })
+            }
+
+            return fail(500, {
+                message: 'Server error. Try again later.'
+            })
+            */
+
+            console.log("logout failed")
+            //return redirect(303, '/')
+            return { success: false };
+        }
+
+        console.log("logout successful")
+        throw redirect(303, '/')
+    }
+}

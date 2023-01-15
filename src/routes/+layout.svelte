@@ -1,2 +1,19 @@
-<h4>transpire device table - supabase dev branch</h4>
+<script>
+    import { invalidateAll } from '$app/navigation'
+    import { supabaseClient } from '$lib/supabase.js'
+    import { onMount } from 'svelte'
+
+
+    onMount(() => {
+        
+        const {data: { subscription }} = supabaseClient.auth.onAuthStateChange(() => {
+            invalidateAll()
+        })
+
+        return () => {
+            subscription.unsubscribe()
+        }
+    })
+
+</script>
 <slot></slot>
