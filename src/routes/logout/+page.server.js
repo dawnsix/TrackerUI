@@ -1,5 +1,10 @@
 import { redirect } from '@sveltejs/kit'
 
+export const load = ({ locals }) => {
+    if(!locals.session)
+        throw redirect(303, '/')
+}
+
 export const actions = {
 
     default: async ({locals}) => {
@@ -8,6 +13,7 @@ export const actions = {
 
         if(error) {
             /*
+            // TEMP: but in serialization lib, awaiting fix
             if(err.status === 400) {
                 return fail(400, {
                     error: 'Invalid Credentials'
