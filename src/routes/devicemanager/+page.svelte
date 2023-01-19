@@ -1,5 +1,6 @@
 <script>
     import { deviceDataStore } from '../../stores/deviceStore.js'
+    import { onMount } from 'svelte';
     import toast from 'svelte-french-toast'
 
     // origin source
@@ -18,6 +19,10 @@
         "Model","In Use?","Project", "Allocated to", "ScreenSize"]
 
     // functions
+    onMount(async () => {
+		//console.log(data.devices)
+	});
+
     const filterTable = () => {
         
         var input, filter, table, tr, td, i, txtValue, trows
@@ -29,7 +34,7 @@
         // depends on column order
         for (i = 1; i < tr.length; i++) {
             trows = tr[i].getElementsByTagName("td")
-            td = trows[0].innerText
+            td = trows[0].innerHTML
 
             if (td) {
                 txtValue = td
@@ -40,6 +45,24 @@
                 }
             }
         }
+
+    }
+
+    const isSameState = (newState, oldState) => {
+
+        return newState.deviceid == oldState.deviceid &&
+            newState.passcode == oldState.passcode &&
+            newState.allocationid == oldState.allocationid &&
+            newState.os == oldState.os &&
+            newState.osversion == oldState.osversion &&
+            newState.dateconfirmed == oldState.dateconfirmed &&
+            newState.model == oldState.model &&
+            newState.inuse == oldState.inuse.toString() &&
+            newState.project == oldState.project &&
+            newState.transpirecode == oldState.transpirecode &&
+            newState.allocation == oldState.allocation &&
+            newState.devicecode == oldState.devicecode &&
+            newState.screensize == oldState.screensize
 
     }
 
@@ -101,45 +124,77 @@
     }
 
     const getNewRow = (device) => {
+        var rowIdx = 0
         var newRow = {}
         var table = document.getElementById("devicetable");
 
         for (var i = 0, row; row = table.rows[i]; i++) {
-            if(row.cells[0].innerText == device.deviceid) {
+            if(row.cells[0].innerHTML == device.deviceid) {
+
+                rowIdx = i
                 
-                newRow['deviceid'] = row.cells[0].innerText.trim()
-                newRow['devicecode'] = row.cells[1].innerText.trim()
-                newRow['passcode'] = row.cells[2].innerText.trim()
-                newRow['os'] = row.cells[3].innerText.trim()
-                newRow['osversion'] = row.cells[4].innerText.trim()
+                newRow['deviceid'] = row.cells[0].innerHTML.trim()
+                newRow['devicecode'] = row.cells[1].innerHTML.trim()
+                newRow['passcode'] = row.cells[2].innerHTML.trim()
+                newRow['os'] = row.cells[3].innerHTML.trim()
+                newRow['osversion'] = row.cells[4].innerHTML.trim()
                 newRow['dateconfirmed'] = row.cells[5].children[0].value
-                newRow['model'] = row.cells[6].innerText.trim()
-                newRow['inuse'] = row.cells[7].innerText.trim()
-                newRow['project'] = row.cells[8].innerText.trim()
-                newRow['allocation'] = row.cells[9].innerText.trim()
-                newRow['screensize'] = row.cells[10].innerText.trim()
+                newRow['model'] = row.cells[6].innerHTML.trim()
+                newRow['inuse'] = row.cells[7].innerHTML.trim()
+                newRow['project'] = row.cells[8].innerHTML.trim()
+                newRow['allocation'] = row.cells[9].innerHTML.trim()
+                newRow['screensize'] = row.cells[10].innerHTML.trim()
 
                 break
             }
         }
 
-        return newRow
+        return [newRow, rowIdx]
     }
 
-    const handleEditMode = async(device) => {
+    const restoreRow = async(row, idx) => {
+
+        var table = document.getElementById("devicetable");
+        idx = idx + 1
+
+        table.rows[idx].setAttribute("contenteditable", true)
+
+        for (var c = 0, y = table.rows[idx].cells.length; c < y; c++) {
+
+            table.rows[idx].cells[0].innerHTML = row.deviceid
+            table.rows[idx].cells[1].innerHTML = row.devicecode
+            table.rows[idx].cells[2].innerHTML = row.passcode
+            table.rows[idx].cells[3].innerHTML = row.os
+            table.rows[idx].cells[4].innerHTML = row.osversion
+            table.rows[idx].cells[5].children[0].value = row.dateconfirmed
+            table.rows[idx].cells[6].innerHTML = row.model
+            table.rows[idx].cells[7].innerHTML = row.inuse
+            table.rows[idx].cells[8].innerHTML = row.project
+            table.rows[idx].cells[9].innerHTML = row.allocation
+            table.rows[idx].cells[10].innerHTML = row.screensize
+        }
+
+        table.rows[idx].setAttribute("contenteditable", false)
+    }
+
+    const handleEditMode = async(device, idx) => {
 
         runEditMode(editMode, device)
 
         if(editMode) {
 
             var oldRecord = getOldRow(device)
-            var newRecord = getNewRow(device)
+            var newRecord = getNewRow(device)[0]
+            var newRecordIdx = getNewRow(device)[1]
 
+            console.log(newRecordIdx)
             console.log(JSON.stringify(oldRecord))
             console.log(JSON.stringify(newRecord))
             console.log(JSON.stringify(oldRecord) === JSON.stringify(newRecord))
 
-            if(true) { // check if new and old records match here
+            if(!isSameState(newRecord, oldRecord)) { // check if new and old records match here
+
+                console.log("no match, updating...")
 
                 editMode = !editMode
 
@@ -150,9 +205,18 @@
 
                 var wrapper = new Promise(async function(resolve, reject) {
                     var updateResults = await updateRes
-                    if(updateResults.status == 200)
+                    if(updateResults.status == 200) {
+
+                        // TODO: fix quick succession changes of the same row
+                        data.devices[newRecordIdx - 1] = newRecord
+                        deviceDataStore.set(data.devices)
+
                         resolve(updateResults)
-                    else reject(updateResults)
+                        
+                    } else {
+                        restoreRow(oldRecord, idx)
+                        reject(updateResults)
+                    }
                 })
              
                 toast.promise(
@@ -162,6 +226,8 @@
                         error: 'Failed to update ' + device.deviceid + ', check AWS',
                     }
                 )
+            } else {
+                editMode = !editMode
             }
         } else {
             editMode = !editMode
@@ -188,7 +254,7 @@
                 <th>edit</th>
             </tr>
 
-            {#each deviceData as device (device.deviceid)}
+            {#each deviceData as device, x}
                 <tr>
                     <td>{device.deviceid}</td>
                     <td>{device.devicecode}</td>
@@ -202,8 +268,8 @@
                     <td>{device.allocation}</td>
                     <td>{device.screensize}</td>
                     <td id="editField" contenteditable="false"><input type="checkbox" 
-                        on:click={() => { handleEditMode(device) }}></td>
-                    <td id="restoreBtn"><button on:click={() => { }}>restore</button></td>
+                        on:click={() => { handleEditMode(device, x) }}></td>
+                    <td id="restoreBtn"><button on:click={() => { restoreRow(device, x) }}>restore</button></td>
                 </tr>
             {:else}
                 <p>Failed to retrieve database records. Check with admin.</p>

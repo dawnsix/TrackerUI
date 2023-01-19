@@ -24,5 +24,7 @@ export const AWSGetDevices = async () => {
         transpirecode: device.TranspireCode
     }));
     
+    console.log('reloaded data')
+
     return mapped
 }

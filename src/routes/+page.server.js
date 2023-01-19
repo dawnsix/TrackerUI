@@ -1,4 +1,4 @@
-import { redirect, error } from '@sveltejs/kit'
+import { redirect, fail } from '@sveltejs/kit'
 
 export const load = ({ locals }) => {
     
@@ -17,10 +17,13 @@ export const actions = {
         })
 
         if(err) {
-            throw error(403, {
-                message: 'Login failure'
+            console.log(err)
+            return fail(401, { 
+                error: true,
+                message: 'Invalid credentials',
             })
         }
+        
         throw redirect(303, '/devicemanager')
     }
   }

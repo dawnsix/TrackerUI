@@ -1,23 +1,30 @@
 <script>
     import toast from 'svelte-french-toast'
 	import { enhance } from '$app/forms'
+	import { onMount } from 'svelte'
+
+	let pwRef
 
 	const submitLogin = ({ form, data, action, cancel }) => {
 
 		return async ({ result, update }) => {
-			if(result.status == 403) {
+
+			if(result.type === 'failure') {
 				toast.error("Invalid credentials", {
 					duration: 2000,
 				})
+
+				form.reset()
+				pwRef.focus(); 
 			}
 
 			if(result.status == 303) {
 				toast.success("Login successful", {
 					duration: 2000,
 				})
-			}
 
-			update()
+				update()
+			}
 		}
 	}
 
@@ -37,7 +44,6 @@
 							type="email"
 							required
 							placeholder="Email"
-							value="admin@devicetracker.qa"
 						/>
 					</fieldset>
 					<fieldset class="form-group">
@@ -47,6 +53,7 @@
 							type="password"
 							required
 							placeholder="Password"
+							bind:this={pwRef}
 						/>
 					</fieldset>
 					<button class="btn btn-lg btn-primary pull-xs-right" type="submit">Sign in</button>

@@ -11,10 +11,12 @@ const simulateUpdateDeviceRecord = async (device) => {
 
     var chance = Math.floor(Math.random() * (100 - 0 + 1) + 0)
  
-    return chance < 90 ? 200 : 503
+    return chance > 20 ? 200 : 503
 }
 
 const updateDeviceRecord = async (payload) => {
+
+    // Add SS data validation before processing
 
     console.log(JSON.stringify(payload))
  
@@ -41,9 +43,8 @@ export const POST = async ({ request, locals }) => {
 
     var device = await request.json()
 
-    //var updateStatus = await simulateUpdateDeviceRecord(device)
-    var updateStatus = await updateDeviceRecord(device)
-    console.group(updateStatus)
+    var updateStatus = await simulateUpdateDeviceRecord(device)
+    //var updateStatus = await updateDeviceRecord(device)
 
     if(updateStatus != 200)
         return new Response(JSON.stringify({message: "update failed"}), {status: 503})
