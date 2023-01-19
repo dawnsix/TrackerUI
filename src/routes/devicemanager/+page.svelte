@@ -34,7 +34,12 @@
         // depends on column order
         for (i = 1; i < tr.length; i++) {
             trows = tr[i].getElementsByTagName("td")
-            td = trows[0].innerHTML
+            td = trows[0].innerHTML +
+                trows[1].innerHTML +
+                trows[3].innerHTML +
+                trows[6].innerHTML +
+                trows[8].innerHTML +
+                trows[9].innerHTML
 
             if (td) {
                 txtValue = td
