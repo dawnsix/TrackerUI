@@ -197,7 +197,8 @@
             console.log(JSON.stringify(newRecord))
             console.log(JSON.stringify(oldRecord) === JSON.stringify(newRecord))
 
-            if(!isSameState(newRecord, oldRecord)) { // check if new and old records match here
+            // only run update if fields have changed
+            if(!isSameState(newRecord, oldRecord)) {
 
                 console.log("no match, updating...")
 
@@ -212,15 +213,17 @@
                     var updateResults = await updateRes
                     if(updateResults.status == 200) {
 
-                        // TODO: fix quick succession changes of the same row
+                        // TODO: fix quick succession edits changes of the same row
                         data.devices[newRecordIdx - 1] = newRecord
                         deviceDataStore.set(data.devices)
 
                         resolve(updateResults)
                         
                     } else {
+
                         restoreRow(oldRecord, idx)
                         reject(updateResults)
+
                     }
                 })
              
@@ -288,13 +291,13 @@
 
 <style>
     #inputBar {
-      background-position: 10px 12px; /* Position the search icon */
-      background-repeat: no-repeat; /* Do not repeat the icon image */
-      width: 50%; /* Full-width */
-      font-size: 16px; /* Increase font-size */
-      padding: 12px 20px 12px 40px; /* Add some padding */
-      border: 1px solid #ddd; /* Add a grey border */
-      margin-bottom: 12px; /* Add some space below the input */
+      background-position: 10px 12px;
+      background-repeat: no-repeat;
+      width: 50%;
+      font-size: 16px;
+      padding: 12px 20px 12px 40px;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
     }
 
     :global(.killRow) {

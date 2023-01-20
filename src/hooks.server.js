@@ -10,5 +10,6 @@ export const handle = async({ event, resolve }) => {
     event.locals.session = session
 
     console.log("running hook.server handler...")
+    console.log()
     return resolve(event)
 }

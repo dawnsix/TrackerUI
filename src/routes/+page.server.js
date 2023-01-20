@@ -16,6 +16,8 @@ export const actions = {
             password: body.password
         })
 
+        console.log(body)
+
         if(err) {
             console.log(err)
             return fail(401, { 

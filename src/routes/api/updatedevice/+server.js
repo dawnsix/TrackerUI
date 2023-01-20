@@ -43,8 +43,8 @@ export const POST = async ({ request, locals }) => {
 
     var device = await request.json()
 
-    var updateStatus = await simulateUpdateDeviceRecord(device)
-    //var updateStatus = await updateDeviceRecord(device)
+    //var updateStatus = await simulateUpdateDeviceRecord(device)
+    var updateStatus = await updateDeviceRecord(device)
 
     if(updateStatus != 200)
         return new Response(JSON.stringify({message: "update failed"}), {status: 503})
