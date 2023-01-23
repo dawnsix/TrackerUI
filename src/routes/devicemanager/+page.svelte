@@ -86,6 +86,10 @@
                             if(table.rows[r].cells[c].id == "date") {
                                 table.rows[r].cells[c].children[0].setAttribute("disabled", true)
                             }
+
+                            if(table.rows[r].cells[c].id == "restoreBtn") {
+                                table.rows[r].cells[c].children[0].hidden = true
+                            }
                         } else {table.rows[r].cells[c].setAttribute("contenteditable", false)}
                     }
                 } else table.rows[r].classList.remove("killRow")
@@ -102,6 +106,10 @@
                     if(table.rows[r].cells[c].id) {
                         if(table.rows[r].cells[c].id == "date") {
                             table.rows[r].cells[c].children[0].removeAttribute("disabled")
+                        }
+
+                        if(table.rows[r].cells[c].id == "restoreBtn") {
+                            table.rows[r].cells[c].children[0].hidden = false
                         }
                     } else table.rows[r].cells[c].setAttribute("contenteditable", true)
                 }
@@ -192,7 +200,6 @@
             var newRecord = getNewRow(device)[0]
             var newRecordIdx = getNewRow(device)[1]
 
-            console.log(newRecordIdx)
             console.log(JSON.stringify(oldRecord))
             console.log(JSON.stringify(newRecord))
             console.log(JSON.stringify(oldRecord) === JSON.stringify(newRecord))
@@ -229,9 +236,11 @@
              
                 toast.promise(
                     wrapper, {
-                        loading: 'Updating record for device ' + device.deviceid + '...',
-                        success: 'Device ' + device.deviceid + ' updated',
-                        error: 'Failed to update ' + device.deviceid + ', check AWS',
+                        loading: 'Updating record for device ' + device.model + '...',
+                        success: 'Device ' + device.model + ' updated',
+                        error: 'Failed to update ' + device.model + ', check AWS',
+                    }, {
+                        style: 'font-size: 14px;'
                     }
                 )
             } else {
@@ -245,68 +254,260 @@
 
 </script>
 
-<div>
+<div class="table_cntnr">
 
     {#if data.session}
 
-        <input type="text" id="inputBar" on:keyup={() => {filterTable()}} 
+    <div class="div-search">
+        <input type="text" id="inputBar" class="inputBar" on:keyup={() => {filterTable()}} 
             placeholder="Search by name, platform, device ID, or device code...">
+    </div>
 
-        <form action="/logout" method="POST"><button>logout</button></form>
+    <div class="div-table">
 
-        <table id="devicetable">
+        <!--
+        <div class="table_bar">
+
+        </div>
+        -->
+
+        <table id="devicetable" class="devicetable">
             <tr>
                 {#each tableHeaders as hdr}
                     <th>{hdr}</th>
                 {/each}
-                <th>edit</th>
             </tr>
 
             {#each deviceData as device, x}
                 <tr>
-                    <td>{device.deviceid}</td>
+                    <td style="width:40px;">{device.deviceid}</td>
                     <td>{device.devicecode}</td>
-                    <td>{device.passcode}</td>
+                    <td style="width:20px;">{device.passcode}</td>
                     <td>{device.os}</td>
                     <td>{device.osversion}</td>
-                    <td id="date"><input type="date" disabled=true value={device.dateconfirmed}></td>
+                    <td id="date" style="width:10px;"><input class="dateInput" type="date" disabled=true value={device.dateconfirmed}></td>
                     <td>{device.model}</td>
                     <td>{device.inuse}</td>
                     <td>{device.project}</td>
                     <td>{device.allocation}</td>
                     <td>{device.screensize}</td>
-                    <td id="editField" contenteditable="false"><input type="checkbox" 
-                        on:click={() => { handleEditMode(device, x) }}></td>
-                    <td id="restoreBtn"><button on:click={() => { restoreRow(device, x) }}>restore</button></td>
+                    <!--<td id="editField" contenteditable="false"><input type="checkbox" 
+                        on:click={() => { handleEditMode(device, x) }}></td>-->
+
+                    <td id="editField" style="width:37px;" class="editField" contenteditable="false">
+                        <label class="switch">
+                            <input type="checkbox" on:click={() => { handleEditMode(device, x) }}>
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td id="restoreBtn" class="restoreBtn" style="width:19px;"><button hidden class="button-54" role="button" on:click={() => { restoreRow(device, x) }}>&#8634;</button></td>
                 </tr>
             {:else}
                 <p>Failed to retrieve database records. Check with admin.</p>
             {/each}
         </table>
+    </div>
+
+    <br />
 
     {:else}
         <div></div>
     {/if}
+    
 </div>
 
 <style>
-    #inputBar {
-      background-position: 10px 12px;
-      background-repeat: no-repeat;
-      width: 50%;
-      font-size: 16px;
-      padding: 12px 20px 12px 40px;
-      border: 1px solid #ddd;
-      margin-bottom: 12px;
-    }
+	
+	:global(body) {
+		font-family: Arial !important;
+	}
 
     :global(.killRow) {
-      -webkit-filter: blur(2px);
-      -moz-filter: blur(2px);
-      -o-filter: blur(2px);
-      -ms-filter: blur(2px);
-      filter: blur(2px);
-      background-color: #ccc;
-      pointer-events: none;
+        -webkit-filter: blur(2px);
+        -moz-filter: blur(2px);
+        -o-filter: blur(2px);
+        -ms-filter: blur(2px);
+        filter: blur(2px);
+        background-color: #ccc;
+        pointer-events: none;
     }
+
+    div {
+        /*border:1px solid black;*/
+    }
+
+    .table_bar {
+        background-color: black;
+        width: 10px;
+        height: 100px;
+        float: left;
+    }
+
+    .inputBar {
+        margin: auto;
+        display: block;
+        font-family: Arial !important;
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 50%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid rgb(0, 0, 0);
+        margin-bottom: 10px;
+    }
+
+    input::placeholder {
+		font-family: Arial !important;
+		opacity: 0.5;
+		color: rgb(255, 0, 0)(197, 197, 197);
+	}
+
+    .inputBar:focus {
+        margin: auto;
+        display: block;
+        font-family: Arial !important;
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 50%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid rgb(0, 0, 0);
+        margin-bottom: 10px;
+        outline: none !important;
+        border:1px solid black;
+    }
+
+    /*borders*/
+    /*
+    .div-search {
+        border:1px solid black;
+    }
+
+    /*table*/
+
+    .editField {
+        border: 0px;
+    }
+
+    .restoreBtn {
+        border: 0px;
+        max-width: 37px;
+        min-width: 37px;
+    }
+
+    .table_cntnr {
+        width: 100%;
+    }
+
+    .devicetable {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    th {
+        border: 1px solid;
+    }
+
+    td {
+        border: 1px solid;
+        padding-left: 3px;
+    }
+
+    /*restore btn*/
+    .button-54 {
+        font-family: Arial !important;
+        font-size: 22px;
+        text-decoration: none;
+        text-transform: uppercase;
+        color: #000;
+        cursor: pointer;
+        border: 1px solid;
+        padding: 0.25em 0.5em;
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px;
+        position: relative;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+    }
+
+    .button-54:active {
+        box-shadow: 0px 0px 0px 0px;
+        top: 3px;
+        left: 3px;
+    }
+
+    @media (min-width: 768px) {
+        .button-54 {
+            /*padding: 0.25em 0.75em;*/
+            padding: 0em 0.25em;
+        }
+    }
+
+    /*checkbox*/
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        border: 1px solid;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: white;
+        -webkit-transition: .1s;
+        transition: .1s;
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px;
+    }
+
+    .slider:before {
+        position: absolute;
+        border: 1px solid;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: #ccc;
+        -webkit-transition: .1s;
+        transition: .1s;
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px;
+    }
+
+    input:checked + .slider {
+        background-color: rgb(121, 175, 121);
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px rgb(0, 0, 0);
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px;
+    }
+
+    /* date */
+    .dateInput {
+        font-family: Arial !important;
+    }
+
 </style>

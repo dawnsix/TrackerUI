@@ -11,7 +11,7 @@ const simulateUpdateDeviceRecord = async (device) => {
 
     var chance = Math.floor(Math.random() * (100 - 0 + 1) + 0)
  
-    return chance > 20 ? 200 : 503
+    return chance > 100 ? 200 : 503
 }
 
 const updateDeviceRecord = async (payload) => {
