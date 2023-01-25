@@ -1,287 +1,335 @@
 <script>
-    import { deviceDataStore } from '../stores/deviceStore.js';
-    
-    // origin source
-    export let data
+    //import toast from 'svelte-french-toast'
+	import { toast } from '@zerodevx/svelte-toast'
+	import { fade } from 'svelte/transition';
+	import { enhance } from '$app/forms'
+	import { onMount } from 'svelte'
 
-    // initialize datastore to maintain local state
-    let deviceData
-    deviceDataStore.set(data.devices.Items)
-    deviceDataStore.subscribe((deviceSrc) => { deviceData = deviceSrc })
+	let focusRef
 
-    let editPreState = null 
-    let inEdit = false
-    let editIdx = 0
-    let tableHeaders = ["Device ID","Passcode","Allocation ID", "OS","OS Version","Date Confirmed",
-        "Model","In Use?","Project","Allocation","DeviceCode","ScreenSize"]
-    let headers = ["DeviceID","Passcode","AllocationID", "OS","OSVersion","DateConfirmed",
-        "Model","InUse","Project","TranspireCode","Allocation","DeviceCode","ScreenSize"]
+	const submitLogin = ({ form, data, action, cancel }) => {
 
-    function toggleEdit(device) {
+		toast.push(`CHECKING...`, { duration: 1000 })
 
-        if(editPreState == null) 
-            editPreState = device
+		return async ({ result, update }) => {
 
-        editMode(device)
-        handleInput()
+			if(result.type === 'failure') {
 
-        inEdit = !inEdit
+				toast.pop()
+				toast.push(`<p>&#10060; NOPE.</p>`, { duration: 3000 })
 
-    }
+				form.reset()
+				focusRef.focus(); 
+			}
 
-    function editMode(device) {
+			if(result.status == 303) {
 
-        var table = document.getElementById("devicetable");
+				toast.pop()
+				toast.push(`<p>&#9989; LOGIN SUCCESSFUL</p>`, { duration: 3000 })
 
-        // if in edit mode, kill all other rows and enable editing in target row, else inverse
-        if(inEdit) {
-            for (var r = 1, x = table.rows.length; r < x; r++) {
-                if(table.rows[r].cells[0].innerHTML == device.DeviceID) {
-                    for (var c = 0, y = table.rows[r].cells.length; c < y; c++)
-                        if(table.rows[r].cells[c].id != "editField" &&
-                           table.rows[r].cells[c].id != "restoreBtn")
-                            table.rows[r].cells[c].setAttribute("contenteditable", false)
-                } else table.rows[r].classList.remove("killrow")
-            }
-
-            return
-        }
-
-        for (var r = 1, x = table.rows.length; r < x; r++) {
-            if(table.rows[r].cells[0].innerHTML == device.DeviceID) {
-                editIdx = r
-                for (var c = 0, y = table.rows[r].cells.length; c < y; c++)
-                    if(table.rows[r].cells[c].id != "editField" && 
-                       table.rows[r].cells[c].id != "restoreBtn")
-                        table.rows[r].cells[c].setAttribute("contenteditable", true)
-            } else table.rows[r].classList.add("killrow")
-        }
-
-    }
-
-    async function handleInput() {
-
-        // build our device object from the current row if in edit mode
-        if(inEdit) {
-            var [outjson, postobj, updatedRow] = [{}, {}, null]
-            updatedRow = document.getElementById("devicetable").rows[editIdx]
-
-            headers.forEach((hrd, i) => {
-                // build again as 'postobj' to match local schema (fix this in aws!)
-                outjson[hrd.toLocaleLowerCase()] = updatedRow.cells[i].innerHTML
-                postobj[hrd] = updatedRow.cells[i].innerHTML
-            })
-
-            // if the record has updated, send a request to local API then AWS API to update record
-            // if successful, update local datastore which will dyna-update table else inverse
-            if(!isSameState(outjson)) {
-                await fetch('/api/devicemanager', {
-                    method: 'POST',
-                    body: JSON.stringify(outjson)
-                }).then((response) => {
-                    if(response.status == 200) {
-                        data.devices.Items[editIdx - 1] = postobj
-                        deviceDataStore.set(data.devices.Items)
-                    }
-                    else { 
-                        alert('update failed - check backend')
-                        deviceDataStore.set(data.devices.Items)
-                    }
-                })
-            }
-            
-            editPreState = null
-            editIdx = 0
-        }
-
-    }
-
-    // compare pre-state and newly built post-state objects to see whether we need to update
-    function isSameState(newstate) {
-
-        return newstate.deviceid == editPreState.DeviceID &&
-            newstate.passcode == editPreState.Passcode &&
-            newstate.allocationid == editPreState.AllocationID.toString() &&
-            newstate.os == editPreState.OS &&
-            newstate.osversion == editPreState.OSVersion &&
-            newstate.dateconfirmed == editPreState.DateConfirmed &&
-            newstate.model == editPreState.Model &&
-            newstate.inuse == editPreState.InUse.toString() &&
-            newstate.project == editPreState.Project &&
-            newstate.transpirecode == editPreState.TranspireCode &&
-            newstate.allocation == editPreState.Allocation &&
-            newstate.devicecode == editPreState.DeviceCode &&
-            newstate.screensize == editPreState.ScreenSize
-
-    }
-
-    function resetRow() {
-
-        // temp solution, look into why store state not working
-        if(inEdit) {
-
-            var cells = document.getElementById("devicetable").rows[editIdx].cells;
-            cells[0].innerHTML = editPreState.DeviceID
-            cells[1].innerHTML = editPreState.Passcode
-            cells[2].innerHTML = editPreState.AllocationID
-            cells[3].innerHTML = editPreState.OS
-            cells[4].innerHTML = editPreState.OSVersion
-            cells[5].innerHTML = editPreState.DateConfirmed
-            cells[6].innerHTML = editPreState.Model
-            cells[7].innerHTML = editPreState.InUse
-            cells[8].innerHTML = editPreState.Project
-            cells[9].innerHTML = editPreState.TranspireCode
-            cells[10].innerHTML = editPreState.Allocation
-            cells[11].innerHTML = editPreState.DeviceCode
-            cells[12].innerHTML = editPreState.ScreenSize
-        }
-
-    }
-
-    function filterTable() {
-        
-        var input, filter, table, tr, td, i, txtValue, trows
-        input = document.getElementById("inputBar")
-        filter = input.value.toUpperCase()
-        table = document.getElementById("devicetable")
-        tr = table.getElementsByTagName("tr")
-
-        // depends on column order
-        for (i = 1; i < tr.length; i++) {
-            trows = tr[i].getElementsByTagName("td")
-            td = trows[0].innerText + 
-                trows[3].innerText + 
-                trows[6].innerText + 
-                trows[8].innerText + 
-                trows[9].innerText + 
-                trows[10].innerText
-
-            if (td) {
-                txtValue = td
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = ""
-                } else {
-                    tr[i].style.display = "none"
-                }
-            }
-        }
-
-    }
+				update()
+			}
+			
+		}
+	}
 
 </script>
 
-<div>
+<div class="parent_container">
+	<div class="wrapper">
+		<div class="form_area">
+			<form class="form_items" method="POST" use:enhance={submitLogin}>
+				<fieldset class="form-group">
+					<input 
+						type="email" 
+						class="form_style" 
+						id="email" 
+						name="email"
+						bind:this={focusRef}  
+						placeholder="Enter your email" 
+						required />
+				</fieldset>
+				<br />
+				<fieldset class="form-group">
+					<input 
+						type="password" 
+						class="form_style" 
+						id="password" 
+						name="password"
+						placeholder="Enter your password"
+						required />
+					</fieldset>
+				<div>
+					<button class="btn btn-lg btn-primary pull-xs-right" type="submit">SUbmi;t</button>
+				</div>
+			</form>
+		</div>
+		<div class="logo_grp">
 
-    <input type="text" id="inputBar" on:keyup={ () => {filterTable()} } placeholder="Search for names..">
+		</div>
 
-    <table id="devicetable">
-        <tr>
-            {#each tableHeaders as hdr}
-                <th>{hdr}</th>
-            {/each}
-            <th>edit</th>
-        </tr>
+		<p class="login_txt_grp_a">LOGIN</p>
+		 
+		<section class="custom-kontakt">
+			<div class="barcode-box">
+				<div class="barcode-stripes">
+					<span class="stripe-1"></span>
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-3"></span>
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span> 
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-2"></span>
+					<span class="stripe-3"></span>
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span> 
+					<span class="stripe-3"></span>
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-3"></span> 
+					<span class="stripe-2"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span>
+					<span class="stripe-1"></span>
+					<span class="sig1">A</span>
+					<span class="sig2">U</span>
+					<span class="sig3">T</span>
+					<span class="sig4">H</span>
+					<span class="sig5">N</span> 
+					<span class="sig6">T</span> 
+					<span class="sig7">I</span>
+					<span class="sig8">C</span>
+					<span class="sig9">8</span>
+				</div>
+			</div>
+		</section>
 
-        {#each deviceData as device (device.DeviceID)}
-            <tr>
-                <td>{device.DeviceID}</td>
-                <td>{device.Passcode}</td>
-                <td>{device.AllocationID}</td>
-                <td>{device.OS}</td>
-                <td>{device.OSVersion}</td>
-                <td>{device.DateConfirmed}</td>
-                <td>{device.Model}</td>
-                <td>{device.InUse}</td>
-                <td>{device.Project}</td>
-                <td style="display:none;">{device.TranspireCode}</td>
-                <td>{device.Allocation}</td>
-                <td>{device.DeviceCode}</td>
-                <td>{device.ScreenSize}</td>
-                <td id="editField">
-                    <label class="switch">
-                        <input type="checkbox" on:click={() => { toggleEdit(device) }}>
-                        <span class="slider"></span>
-                    </label>
-                </td>
-                <td id="restoreBtn"><button on:click={ () => {resetRow()} }>restore</button></td>
-            </tr>
-        {:else}
-            <p>Failed to retrieve database records. Check with admin.</p>
-        {/each}
-    </table>
+		<div class="sso_bar"></div>
+
+	</div>
+	
 </div>
 
 <style>
 
-    #inputBar {
-      background-position: 10px 12px; /* Position the search icon */
-      background-repeat: no-repeat; /* Do not repeat the icon image */
-      width: 50%; /* Full-width */
-      font-size: 16px; /* Increase font-size */
-      padding: 12px 20px 12px 40px; /* Add some padding */
-      border: 1px solid #ddd; /* Add a grey border */
-      margin-bottom: 12px; /* Add some space below the input */
-    }
+	:global(body) {
+		font-family: Arial !important;
+	}
 
-    :global(.killrow) {
-      -webkit-filter: blur(2px);
-      -moz-filter: blur(2px);
-      -o-filter: blur(2px);
-      -ms-filter: blur(2px);
-      filter: blur(2px);
-      background-color: #ccc;
-      pointer-events: none;
-    }
+	input::placeholder {
+		font-family: Arial !important;
+		opacity: 0.5;
+		color: rgb(65, 65, 65)(197, 197, 197);
+	}
+	
+	*{
+		margin: 0;
+		padding: 0;
+	}
 
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 34px;
-    }
-    
-    .switch input { 
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-    
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-    
-    input:checked + .slider {
-      background-color: #6e0c0c;
-    }
-    
-    input:focus + .slider {
-      box-shadow: 0 0 1px #6e0c0c;
-    }
-    
-    input:checked + .slider:before {
-      -webkit-transform: translateX(26px);
-      -ms-transform: translateX(26px);
-      transform: translateX(26px);
-    }
-    
-    </style>
+	.parent_container {
+		padding-top: 20px;
+		padding-bottom: 25px;
+	}
+
+	.sso_bar {
+		height: 5px;
+		background-color: black;
+		margin-top: 170px;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+
+	.login_txt_grp_a {
+		text-align: center;
+		vertical-align: top;
+		font-size: 70px;
+		color: rgb(255, 255, 255);
+		margin-top: 20px;
+		letter-spacing: 10px;
+		text-shadow: 5px 5px rgb(0, 0, 0);
+	}
+
+	.logo_grp {
+		font-size: 20px;
+		padding-top: 10px;
+		background-color: #ebebeb;
+	}
+
+	.wrapper {
+		padding-top: 100px;
+		width: 720px;
+		border: 3px solid black;
+		overflow: hidden;
+		padding-bottom: 100px;
+		margin: auto;
+		box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px, 5px 5px 0px 0px rgb(0, 0, 0);
+	}
+	.form_area{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		background-color: #fff;
+		height: auto;
+		width: auto;
+		float:left;
+		width: 400px;
+	}
+
+	.title{
+		font-weight: 900;
+		font-size: 1.5em;
+		margin-top: 20px;
+	}
+
+	.sub_title{
+		font-weight: 600;
+		margin: 5px 0;
+	}
+
+	.form_group{
+		display: flex;
+		flex-direction: column;
+		align-items: baseline;
+		margin: 20px;
+	}
+
+	.form_style{
+		outline: none;
+		border: 2px solid #000;
+		box-shadow: 3px 4px 0px 1px #000;
+		width: 290px;
+		padding: 12px 10px;
+		font-size: 15px;
+	}
+
+	.form_style:focus {
+		transform: translateY(4px);
+		box-shadow: 1px 2px 0px 0px #000;
+		background: #ebebeb;
+	}
+
+	.btn:focus{
+		transform: translateY(4px);
+		box-shadow: 1px 2px 0px 0px #000;
+		background: #ebebeb;
+		outline: none !important;
+    	border:1px solid black;
+	}
+
+	.btn{
+		padding: 15px;
+		margin: 30px 0px;
+		width: 310px;
+		font-size: 20px;
+		background: rgb(206, 206, 206);
+		font-weight: 800;
+		box-shadow: 5px 5px 0px 0px #000;
+		font-family: 'Allerta Stencil';
+		color: rgb(0, 0, 0);
+		text-shadow: 2px 2px #fff;
+	}
+
+	p{
+		margin: 20px 0px;
+	}
+
+	/* barcode */	
+	@import url('https://fonts.googleapis.com/css?family=Quicksand');
+	.custom-kontakt .barcode-box { 
+		margin-top: -110px;
+		border: 1px solid rgb(255, 255, 255);
+		width: 300px; 
+		height: 150px; 
+		padding-right: 10px;
+		float: right;
+	}
+	.custom-kontakt .barcode-box .barcode-stripes .stripe-1 { 
+	display: block; 
+	height: 120px; 
+	width: 3px; 
+	float: left; 
+	border-right: thin solid #000;
+		border-left: thin solid #000; 
+		border-top-color: #fff; 
+		border-bottom-color: #fff; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes .stripe-2 { 
+		display: block; 
+		height: 110px; 
+		width: 5px; 
+		float: left; 
+		margin-left: 1px; 
+		margin-right: 1px; 
+		border-right: thick solid #000;
+		border-left: thick solid #000; 
+		border-top-color: #fff; 
+		border-bottom-color: #fff; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes .stripe-3 { 
+		display: block; 
+		height: 120px; 
+		width: 5px; 
+		float: left; 
+		margin-left: 1px; 
+		margin-right: 1px; 
+		border-right: thick solid #000;
+		border-left: thin solid #000; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig1, .custom-kontakt .barcode-box .barcode-stripes span.sig2, .custom-kontakt .barcode-box .barcode-stripes span.sig3, .custom-kontakt .barcode-box .barcode-stripes span.sig4, .custom-kontakt .barcode-box .barcode-stripes span.sig5, .custom-kontakt .barcode-box .barcode-stripes span.sig6, .custom-kontakt .barcode-box .barcode-stripes span.sig7, .custom-kontakt .barcode-box .barcode-stripes span.sig8, .custom-kontakt .barcode-box .barcode-stripes span.sig9 { 
+		color: #000; 
+		font-size: 12px;
+		font-family:'Quicksand', sans-serif;
+		float: left; 
+		margin-top: -10px;
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig1 { 
+		margin-right: 20px; 
+		margin-left: 7px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig2 { 
+		margin-right: 20px; 
+		margin-left: 7px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig3 { 
+		margin-right: 13px; 
+		margin-left: 5px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig4 { 
+		margin-right: 5px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig5 { 
+		margin-right: 15px; 
+		margin-left: 5px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig6 { 
+		margin-right: 15px; 
+		margin-left: 2px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig7 { 
+		margin-right: 15px; 
+		margin-left: 10px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig8 { 
+		margin-right: 15px; 
+		margin-left: 5px; 
+	}
+	.custom-kontakt .barcode-box .barcode-stripes span.sig9 { 
+		margin-left: 12px; 
+	}
+
+</style>

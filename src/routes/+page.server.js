@@ -1,20 +1,29 @@
+import { redirect, fail } from '@sveltejs/kit'
 
-import { VITE_API_KEY, VITE_HOST_DOMAIN } from '$env/static/private'
-import { deviceDataStore } from '../stores/deviceStore.js';
+export const load = ({ locals }) => {
+    
+    if(locals.session)
+        throw redirect(303, '/devicemanager')
+    
+}
 
-export const load = () => {
+export const actions = {
 
-    const fetchDevices = async () => {
- 
-        const res = await fetch(`https://${VITE_HOST_DOMAIN}/live/getdevices`, {
-            headers: {'X-API-KEY': `${VITE_API_KEY}`}
+    default: async ({request, locals}) => {
+        const body = Object.fromEntries(await request.formData())
+        const { data, error: err } = await locals.sb.auth.signInWithPassword({
+            email: body.email,
+            password: body.password
         })
 
-        const data = await res.json()    
-        return data.body
+        if(err) {
+            console.log(err)
+            return fail(401, { 
+                error: true,
+                message: 'Invalid credentials',
+            })
+        }
+        
+        throw redirect(303, '/devicemanager')
     }
-    
-    return {
-        devices: fetchDevices()
-    }
-}
+  }

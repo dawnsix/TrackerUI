@@ -1,13 +1,15 @@
-
+import '$lib/supabase.js'
+import { getSupabase } from '@supabase/auth-helpers-sveltekit'
 import { Handle } from "@sveltejs/kit"
-import { ssauth } from "./lib/auth.js"
 
 export const handle = async({ event, resolve }) => {
 
-    event.locals.user = ssauth(event)
+    const {session, supabaseClient } = await getSupabase(event)
 
-    console.log("hooks " + event.locals.user.id)
-    const response = await resolve(event)
-    
-    return response
+    event.locals.sb = supabaseClient
+    event.locals.session = session
+
+    console.log("running hook.server handler...")
+    console.log()
+    return resolve(event)
 }
