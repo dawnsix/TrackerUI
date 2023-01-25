@@ -125,7 +125,7 @@
         </tr>
                     <tr>
             <td><div class="line">
-            <div class="labellight">* Based on a regular <a href="https://github.com/dawnsix">2000 calorie diet</a>
+            <div class="labellight">* Based on a regular <a href="https://youtu.be/vabXXkZjKiw">2000 calorie diet</a>
             <br><br><i>Nutritional details are an estimate and should only be used as a guide for approximation.</i>
             </div>
             </div>

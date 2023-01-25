@@ -15,8 +15,8 @@
     let editMode = false
 
     // table display test
-    let tableHeaders = ["Device ID","DeviceCode","Passcode", "OS","OS Version","Date Confirmed",
-        "Model","In Use?","Project", "Allocated to", "ScreenSize"]
+    let tableHeaders = ["ID","CODE","PASSCODE", "OS","VERSION","DATE CONFIRMED",
+        "MODEL","IN USE?","PROJECT", "WITH", "SCREEN"]
 
     // functions
     onMount(async () => {
@@ -240,7 +240,11 @@
                         success: 'Device ' + device.model + ' updated',
                         error: 'Failed to update ' + device.model + ', check AWS',
                     }, {
-                        style: 'font-size: 14px;'
+                        position: "bottom-center",
+                        style: 'font-family: Arial !important;' + 
+                        ' font-size: 18px; border: 2px solid #ebebeb;' + 
+                        ' background-color: black; color: white;'+ 
+                        ' border-radius: 0px; width: 800px;'
                     }
                 )
             } else {
@@ -260,7 +264,7 @@
 
     <div class="div-search">
         <input type="text" id="inputBar" class="inputBar" on:keyup={() => {filterTable()}} 
-            placeholder="Search by name, platform, device ID, or device code...">
+            placeholder="Searchhhh">
     </div>
 
     <div class="div-table">
@@ -274,7 +278,7 @@
         <table id="devicetable" class="devicetable">
             <tr>
                 {#each tableHeaders as hdr}
-                    <th>{hdr}</th>
+                    <th class="hdrRow">{hdr}</th>
                 {/each}
             </tr>
 
@@ -349,6 +353,7 @@
         font-family: Arial !important;
         background-position: 10px 12px;
         background-repeat: no-repeat;
+        text-align: center;
         width: 50%;
         font-size: 16px;
         padding: 12px 20px 12px 40px;
@@ -394,7 +399,7 @@
         max-width: 37px;
         min-width: 37px;
     }
-
+ 
     .table_cntnr {
         width: 100%;
     }
@@ -403,6 +408,13 @@
         width: 100%;
         overflow: hidden;
         white-space: nowrap;
+    }
+
+    .hdrRow {
+        text-align: left;
+        color: white;
+        background-color: black;
+        padding-left: 3px;
     }
 
     th {

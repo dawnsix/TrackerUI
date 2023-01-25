@@ -1,6 +1,7 @@
 <script>
     //import toast from 'svelte-french-toast'
 	import { toast } from '@zerodevx/svelte-toast'
+	import { fade } from 'svelte/transition';
 	import { enhance } from '$app/forms'
 	import { onMount } from 'svelte'
 
@@ -8,26 +9,14 @@
 
 	const submitLogin = ({ form, data, action, cancel }) => {
 
-		toast.push(`Checking...`, { duration: 1000,
-			theme: { 
-				'--toastBarHeight': 0 ,
-				'--toastBackground': 'black',
-				'--toastColor': 'white'
-			} 
-		})
+		toast.push(`CHECKING...`, { duration: 1000 })
 
 		return async ({ result, update }) => {
 
 			if(result.type === 'failure') {
 
 				toast.pop()
-				toast.push(`<p>Invalid credentials</p>`, { duration: 1000,
-					theme: { 
-						'--toastBarHeight': 0 ,
-						'--toastBackground': 'red',
-						'--toastColor': 'black',
-					} 
-				})
+				toast.push(`<p>&#10060; NOPE.</p>`, { duration: 3000 })
 
 				form.reset()
 				focusRef.focus(); 
@@ -36,16 +25,11 @@
 			if(result.status == 303) {
 
 				toast.pop()
-				toast.push(`<p>Login successful</p>`, { duration: 3000,
-					theme: { 
-						'--toastBarHeight': 0 ,
-						'--toastBackground': 'green',
-						'--toastColor': 'white',
-					} 
-				})
+				toast.push(`<p>&#9989; LOGIN SUCCESSFUL</p>`, { duration: 3000 })
 
 				update()
 			}
+			
 		}
 	}
 
@@ -76,7 +60,7 @@
 						required />
 					</fieldset>
 				<div>
-					<button class="btn btn-lg btn-primary pull-xs-right" type="submit">submit</button>
+					<button class="btn btn-lg btn-primary pull-xs-right" type="submit">SUbmi;t</button>
 				</div>
 			</form>
 		</div>
@@ -85,7 +69,6 @@
 		</div>
 
 		<p class="login_txt_grp_a">LOGIN</p>
-
 		 
 		<section class="custom-kontakt">
 			<div class="barcode-box">
@@ -141,10 +124,6 @@
 </div>
 
 <style>
-
-	div {
-		/*border:1px solid black;*/
-	}
 
 	:global(body) {
 		font-family: Arial !important;

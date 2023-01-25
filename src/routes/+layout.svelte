@@ -22,7 +22,7 @@
 
 <div class="div_hdr">
     <h1 class="header">DEVICE <span class="wavy">TRACKR</span> 2.0</h1>
-    <p class="sub_header">aSBzd2VhciwgaXRzIG5vdCBiYWQgd2ViIGRlc2lnbiwgaXRzICJtb25vY2hyb21hdGljIGJydXRhbGlzbSI=</p>
+    <p class="sub_header">aGlkaW5nIGJlaGluZCBicnV0YWxpc3RpYyBkZXNpZ24=</p>
 </div>
 
     {#if $page.url.pathname  ==='/devicemanager'}
@@ -40,23 +40,36 @@
     {/if}
 
 <Toaster />
-<SvelteToast options={{ reversed: true, intro: { y: 192 } }} />
+<div class="toastWrapper"><SvelteToast options={{ dismissable: false, reversed: true, intro: { y: 192 } }} /></div>
 <slot></slot>
+
+<footer>
+    <div class="footerDiv">
+        <p class="footerText">Copyright 2023, all rights <span class="wavy">riserved</span></p>
+    </div>
+</footer>
 
 <style>
 
-    div {
-        /*border:1px solid black;*/
+    :global(.toastWrapper) {
+        display: contents;
+        font-family: Arial !important;
+        font-size: 18px;
+        text-align: center;
+        border: 2px solid black;
+        border-color: #ebebeb;
+        --dismissable: false;
+        --toastColor: white;
+        --toastBackground: black;
+        --toastBarHeight: 0;
+        --toastContainerBottom: 2px;
     }
 
     :root {
         --toastContainerTop: auto;
         --toastContainerRight: auto;
-        --toastContainerBottom: 8rem;
+        --toastContainerBottom: 2rem;
         --toastContainerLeft: calc(50vw - 8rem);
-    }
-
-    .div_hdr {
     }
 
     .wavy {
@@ -64,11 +77,6 @@
 		text-decoration-style: wavy;
 		text-decoration-color: red;
 	}
-
-    .rtm {
-        font-family: Arial !important;
-        font-size: 70px;
-    }
 
     .header {
         text-align: center;
@@ -80,12 +88,12 @@
 
     .sub_header {
 		vertical-align: top;
-        text-align: center;
+        text-align: left;
 		font-size: 12px;
 		color: rgb(110, 110, 110);
 		letter-spacing: 5px;
         margin-top: -45px;
-        margin-left: -40px;
+        padding-left: 100px;
         padding-bottom: 40px;
     }
 
@@ -114,6 +122,30 @@
 
     .btn_nav:hover {
         color: red;
+    }
+
+    footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 200px;
+        background: rgb(235,235,235);
+        background: linear-gradient(0deg, rgba(235,235,235,1) 0%, rgba(255,255,255,1) 100%, rgba(0,212,255,1) 100%); 
+    }
+
+    .footerDiv {
+        margin-top: 10px;
+        width: 90%;
+        height: 2px;
+        background-color: black;
+        margin: 0 auto;
+    }
+
+    .footerText {
+        text-align: center;
+        padding-top: 5px;
+        font-family: Arial !important;
     }
 
 </style>
