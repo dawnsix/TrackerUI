@@ -10,12 +10,11 @@
     import { navigating } from '$app/stores';
     import NProgress from 'nprogress';
     import ProgressBar from 'svelte-progress-bar'
-    import 'nprogress/nprogress.css';
+    import '$lib/assets/nprogress.css';
 
     let progress
 
     NProgress.configure({
-		// Full list: https://github.com/rstacruz/nprogress#configuration
 		minimum: 0.16
 	});
 
