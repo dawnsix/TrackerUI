@@ -14,8 +14,10 @@
 		"@sveltejs/kit": "^1.0.0-next.587",
 		"@zerodevx/svelte-toast": "^1.0.0-rc.1",
 		"aws-sdk": "^2.1291.0",
+		"nprogress": "^0.2.0",
 		"svelte": "^3.54.0",
 		"svelte-french-toast": "^1.0.3",
+		"svelte-progress-bar": "^3.0.2",
 		"sveltestrap": "^5.10.0",
 		"vite": "^4.0.0"
 	},

@@ -9,14 +9,14 @@
 
 	const submitLogin = ({ form, data, action, cancel }) => {
 
-		toast.push(`CHECKING...`, { duration: 1000 })
+		toast.push(`Authenticating...`, { duration: 1000 })
 
 		return async ({ result, update }) => {
 
 			if(result.type === 'failure') {
 
 				toast.pop()
-				toast.push(`<p>&#10060; NOPE.</p>`, { duration: 3000 })
+				toast.push(`<p>&#10060; Invalid credentials</p>`, { duration: 3000 })
 
 				form.reset()
 				focusRef.focus(); 
@@ -25,8 +25,7 @@
 			if(result.status == 303) {
 
 				toast.pop()
-				toast.push(`<p>&#9989; LOGIN SUCCESSFUL</p>`, { duration: 3000 })
-
+				toast.push(`<p>&#9989; Login success, redirecting...</p>`, { duration: 3000 })
 				update()
 			}
 			
@@ -138,6 +137,14 @@
 	*{
 		margin: 0;
 		padding: 0;
+	}
+
+	:global(.svelte-progress-bar, .svelte-progress-bar-leader) {
+	background-color: #ff0000;
+	}
+
+	:global(.svelte-progress-bar-leader) {
+		color: #000000;
 	}
 
 	.parent_container {
