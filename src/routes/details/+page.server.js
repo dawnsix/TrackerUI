@@ -6,3 +6,10 @@ export const load = ({ locals }) => {
         throw redirect(303, '/')
 
 }
+
+export const actions = {
+
+    default: async ({locals}) => {
+        
+    }
+}

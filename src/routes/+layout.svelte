@@ -5,7 +5,30 @@
     import { onMount } from 'svelte'
     import { Toaster } from 'svelte-french-toast'
     import { SvelteToast } from '@zerodevx/svelte-toast'
+    import { enhance } from '$app/forms'
     import { page } from '$app/stores'
+    import { navigating } from '$app/stores';
+    import NProgress from 'nprogress';
+    import ProgressBar from 'svelte-progress-bar'
+    import 'nprogress/nprogress.css';
+
+    let progress
+
+    NProgress.configure({
+		// Full list: https://github.com/rstacruz/nprogress#configuration
+		minimum: 0.16
+	});
+
+    $: {
+		if ($navigating) {
+            console.log("moving...")
+			NProgress.start();
+		}
+		if (!$navigating) {
+            console.log("moving...")
+			NProgress.done();
+		}
+	}
 
     onMount(() => {
 
@@ -18,7 +41,22 @@
         }
     })
 
+    const handleLogougProgress = ({ form, data, action, cancel }) => {
+
+        // POST does nothing anyway
+        // Enhanced handler with callback appears to trigger NProgress fsr
+        //progress.start()
+
+        return async ({ result, update }) => {
+            //progress.complete()  
+
+            update()
+        }
+    }
+
 </script>
+
+<ProgressBar bind:this={progress} />
 
 <div class="div_hdr">
     <h1 class="header">DEVICE <span class="wavy">TRACKR</span> 2.0</h1>
@@ -27,7 +65,7 @@
 
     {#if $page.url.pathname  ==='/devicemanager'}
         <div class="div_btnctnr">
-            <form action="/logout" method="POST"><button class="btn_nav">logout</button></form>
+            <form action="/logout" method="POST" use:enhance={handleLogougProgress}><button class="btn_nav">logout</button></form>
             <form action="/details"><button class="btn_nav">about</button></form>
         </div>
     {/if}
@@ -51,18 +89,28 @@
 
 <style>
 
+    :global(.svelte-progress-bar, .svelte-progress-bar-leader) {
+	background-color: #ff0000;
+	}
+
+	:global(.svelte-progress-bar-leader) {
+		color: #000000;
+	}
+
     :global(.toastWrapper) {
         display: contents;
         font-family: Arial !important;
         font-size: 18px;
         text-align: center;
-        border: 2px solid black;
-        border-color: #ebebeb;
         --dismissable: false;
         --toastColor: white;
         --toastBackground: black;
         --toastBarHeight: 0;
+        --toastWidth: 350px;
         --toastContainerBottom: 2px;
+        --toastBorder: 2px solid #ebebeb;
+        --toastHeight: 10px;
+        --toastBoxShadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)
     }
 
     :root {
@@ -93,7 +141,7 @@
 		color: rgb(110, 110, 110);
 		letter-spacing: 5px;
         margin-top: -45px;
-        padding-left: 100px;
+        text-align: center;
         padding-bottom: 40px;
     }
 

@@ -20,10 +20,12 @@
 
     // functions
     onMount(async () => {
-		//console.log(data.devices)
+
 	});
 
     const filterTable = () => {
+
+        //TODO: switch to store filter since data is housed in store
         
         var input, filter, table, tr, td, i, txtValue, trows
         input = document.getElementById("inputBar")
@@ -295,9 +297,6 @@
                     <td>{device.project}</td>
                     <td>{device.allocation}</td>
                     <td>{device.screensize}</td>
-                    <!--<td id="editField" contenteditable="false"><input type="checkbox" 
-                        on:click={() => { handleEditMode(device, x) }}></td>-->
-
                     <td id="editField" style="width:37px;" class="editField" contenteditable="false">
                         <label class="switch">
                             <input type="checkbox" on:click={() => { handleEditMode(device, x) }}>
@@ -501,7 +500,8 @@
     }
 
     input:checked + .slider {
-        background-color: rgb(121, 175, 121);
+        background-color: #79AF79;
+        /*background-color: #b51919;*/
         box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px;
     }
 

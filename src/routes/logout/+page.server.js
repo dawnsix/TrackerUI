@@ -13,7 +13,7 @@ export const actions = {
 
         if(error) {
             /*
-            // TEMP: but in serialization lib, awaiting fix
+            // TEMP: bug in serialization lib, awaiting fix
             if(err.status === 400) {
                 return fail(400, {
                     error: 'Invalid Credentials'
