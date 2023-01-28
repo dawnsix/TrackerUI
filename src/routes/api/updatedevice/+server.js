@@ -16,21 +16,24 @@ const simulateUpdateDeviceRecord = async (device) => {
 
 const updateDeviceRecord = async (payload) => {
 
-     payload.deviceid = payload.deviceid.trim().replace(/<[^>]*>?/gm, '');
-     payload.devicecode = payload.devicecode.trim().replace(/<[^>]*>?/gm, '');
-     payload.passcode = payload.passcode.trim().replace(/<[^>]*>?/gm, '');
-     payload.os = payload.os.trim().replace(/<[^>]*>?/gm, '');
-     payload.osversion = payload.osversion.trim().replace(/<[^>]*>?/gm, '');
+     payload.deviceid = payload.deviceid.trim().replace(/<[^>]*>?/gm, '')
+     payload.devicecode = payload.devicecode.trim().replace(/<[^>]*>?/gm, '')
+     payload.passcode = payload.passcode.trim().replace(/<[^>]*>?/gm, '')
+     payload.os = payload.os.trim().replace(/<[^>]*>?/gm, '')
+     payload.osversion = payload.osversion.trim().replace(/<[^>]*>?/gm, '')
      payload.dateconfirmed = payload.dateconfirmed
-     payload.model = payload.model.trim().replace(/<[^>]*>?/gm, '');
-     payload.inuse = payload.inuse === 'true'
-     payload.project = payload.project.trim().replace(/<[^>]*>?/gm, '');
-     payload.allocation = payload.allocation.trim().replace(/<[^>]*>?/gm, '');
-     payload.screensize = payload.screensize.trim().replace(/<[^>]*>?/gm, '');
+     payload.model = payload.model.trim().replace(/<[^>]*>?/gm, '')
+     payload.inuse = payload.inuse
+     payload.project = payload.project.trim().replace(/<[^>]*>?/gm, '')
+     payload.allocation = payload.allocation.trim().replace(/<[^>]*>?/gm, '')
+     payload.screensize = payload.screensize.trim().replace(/<[^>]*>?/gm, '')
+     payload.transpirecode = payload.devicecode.trim().replace(/<[^>]*>?/gm, '')
+     payload.allocationid = 0
 
     console.log(JSON.stringify(payload))
 
- 
+    // can still break stuff by messing with the non-writable fields via raw request
+
     const res = await fetch(`https://${SECRET_HOST_DOMAIN}/live/updatestatus`, {
         method: 'POST',
         headers: {
