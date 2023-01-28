@@ -100,6 +100,12 @@
                             if(table.rows[r].cells[c].id == "restoreBtn") {
                                 table.rows[r].cells[c].children[0].hidden = true
                             }
+
+                            if(table.rows[r].cells[c].id == "inUseField") {
+                                table.rows[r].cells[c].children[0].classList.remove('in_use_select')
+                                table.rows[r].cells[c].children[0].classList.add('in_use_disabled')
+                            }
+
                         } else {table.rows[r].cells[c].setAttribute("contenteditable", false)}
                     }
                 } else table.rows[r].classList.remove("killRow")
@@ -121,6 +127,15 @@
                         if(table.rows[r].cells[c].id == "restoreBtn") {
                             table.rows[r].cells[c].children[0].hidden = false
                         }
+
+                        // .classList.remove('in_use_disabled')
+                        // .classList.add('in_use_select')
+
+                        if(table.rows[r].cells[c].id == "inUseField") {
+                            table.rows[r].cells[c].children[0].classList.remove('in_use_disabled')
+                            table.rows[r].cells[c].children[0].classList.add('in_use_select')
+                        }
+
                     } else table.rows[r].cells[c].setAttribute("contenteditable", true)
                 }
             } else table.rows[r].classList.add("killRow")
@@ -156,17 +171,17 @@
 
                 rowIdx = i
                 
-                newRow['deviceid'] = row.cells[0].innerHTML.trim()
-                newRow['devicecode'] = row.cells[1].innerHTML.trim()
-                newRow['passcode'] = row.cells[2].innerHTML.trim()
-                newRow['os'] = row.cells[3].innerHTML.trim()
-                newRow['osversion'] = row.cells[4].innerHTML.trim()
+                newRow['deviceid'] = row.cells[0].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['devicecode'] = row.cells[1].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['passcode'] = row.cells[2].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['os'] = row.cells[3].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['osversion'] = row.cells[4].innerHTML.trim().replace(/<[^>]*>?/gm, '');
                 newRow['dateconfirmed'] = row.cells[5].children[0].value
-                newRow['model'] = row.cells[6].innerHTML.trim()
-                newRow['inuse'] = row.cells[7].innerHTML.trim()
-                newRow['project'] = row.cells[8].innerHTML.trim()
-                newRow['allocation'] = row.cells[9].innerHTML.trim()
-                newRow['screensize'] = row.cells[10].innerHTML.trim()
+                newRow['model'] = row.cells[6].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['inuse'] = row.cells[7].children[0].value
+                newRow['project'] = row.cells[8].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['allocation'] = row.cells[9].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['screensize'] = row.cells[10].innerHTML.trim().replace(/<[^>]*>?/gm, '');
 
                 break
             }
@@ -191,7 +206,7 @@
             table.rows[idx].cells[4].innerHTML = row.osversion
             table.rows[idx].cells[5].children[0].value = row.dateconfirmed
             table.rows[idx].cells[6].innerHTML = row.model
-            table.rows[idx].cells[7].innerHTML = row.inuse
+            table.rows[idx].cells[7].children[0].value = row.inuse
             table.rows[idx].cells[8].innerHTML = row.project
             table.rows[idx].cells[9].innerHTML = row.allocation
             table.rows[idx].cells[10].innerHTML = row.screensize
@@ -295,7 +310,32 @@
                     <td style="width:60px; min-width:60px">{device.osversion}</td>
                     <td id="date" style="width:115px; min-width:115px"><input class="dateInput" type="date" disabled=true value={device.dateconfirmed}></td>
                     <td style="width:150px; min-width:150px">{device.model}</td>
-                    <td style="width:55px; min-width:55px">{device.inuse}</td>
+                    <!--<td style="width:55px; min-width:55px">{device.inuse}</td>-->
+
+                    <td id="inUseField" style="width:58px; min-width:55px">
+                        <select class="in_use_disabled" contenteditable="false">
+                            
+                            {#if device.inuse != 'true' || device.inuse != 'false'}
+                                <option value="" selected="selected"></option>
+                            {:else}
+                                <option value=""></option>
+                            {/if}
+
+                            {#if device.inuse === 'true'}
+                                <option value="true" selected="selected">true</option>
+                            {:else}
+                                <option value="true">true</option>
+                            {/if}
+
+                            {#if device.inuse === 'false'}
+                                <option value="false" selected="selected">false</option>
+                            {:else}
+                                <option value="false">false</option>
+                            {/if}
+
+                        </select>
+                    </td>
+
                     <td style="width:120px; min-width:120px">{device.project}</td>
                     <td style="width:120px; min-width:120px">{device.allocation}</td>
                     <td style="width:60px; min-width:60px">{device.screensize}</td>
@@ -334,6 +374,19 @@
         -ms-filter: blur(2px);
         filter: blur(2px);
         background-color: #ccc;
+        pointer-events: none;
+    }
+
+    :global(.in_use_select) {
+        border-radius: 0px;
+        border: 0px solid ;
+        background-color: white;
+    }
+
+    :global(.in_use_disabled) {
+        border-radius: 0px;
+        border: 0px solid ;
+        background-color: white;
         pointer-events: none;
     }
 
