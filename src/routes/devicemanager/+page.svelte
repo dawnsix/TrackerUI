@@ -29,7 +29,7 @@
         
         var input, filter, table, tr, td, i, txtValue, trows
         input = document.getElementById("inputBar")
-        filter = input.value.toUpperCase()
+        filter = input.value.trim().toUpperCase()
         table = document.getElementById("devicetable")
         tr = table.getElementsByTagName("tr")
         
@@ -72,7 +72,7 @@
             newState.osversion == oldState.osversion &&
             newState.dateconfirmed == oldState.dateconfirmed &&
             newState.model == oldState.model &&
-            newState.inuse == oldState.inuse.toString() &&
+            newState.inuse == oldState.inuse &&
             newState.project == oldState.project &&
             newState.transpirecode == oldState.transpirecode &&
             newState.allocation == oldState.allocation &&
@@ -124,12 +124,17 @@
                             table.rows[r].cells[c].children[0].removeAttribute("disabled")
                         }
 
+                        if(table.rows[r].cells[c].id == "deviceIdRow") {
+                            table.rows[r].cells[c].setAttribute("contenteditable", false)
+                        }
+
+                        if(table.rows[r].cells[c].id == "deviceCodeRow") {
+                            table.rows[r].cells[c].setAttribute("contenteditable", false)
+                        }
+
                         if(table.rows[r].cells[c].id == "restoreBtn") {
                             table.rows[r].cells[c].children[0].hidden = false
                         }
-
-                        // .classList.remove('in_use_disabled')
-                        // .classList.add('in_use_select')
 
                         if(table.rows[r].cells[c].id == "inUseField") {
                             table.rows[r].cells[c].children[0].classList.remove('in_use_disabled')
@@ -171,17 +176,17 @@
 
                 rowIdx = i
                 
-                newRow['deviceid'] = row.cells[0].innerHTML.trim().replace(/<[^>]*>?/gm, '');
-                newRow['devicecode'] = row.cells[1].innerHTML.trim().replace(/<[^>]*>?/gm, '');
-                newRow['passcode'] = row.cells[2].innerHTML.trim().replace(/<[^>]*>?/gm, '');
-                newRow['os'] = row.cells[3].innerHTML.trim().replace(/<[^>]*>?/gm, '');
-                newRow['osversion'] = row.cells[4].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['deviceid'] = row.cells[0].innerHTML.trim().replace(/<[^>]*>?/gm, '')
+                newRow['devicecode'] = row.cells[1].innerHTML.trim().replace(/<[^>]*>?/gm, '')
+                newRow['passcode'] = row.cells[2].innerHTML.trim().replace(/<[^>]*>?/gm, '')
+                newRow['os'] = row.cells[3].innerHTML.trim().replace(/<[^>]*>?/gm, '')
+                newRow['osversion'] = row.cells[4].innerHTML.trim().replace(/<[^>]*>?/gm, '')
                 newRow['dateconfirmed'] = row.cells[5].children[0].value
-                newRow['model'] = row.cells[6].innerHTML.trim().replace(/<[^>]*>?/gm, '');
-                newRow['inuse'] = row.cells[7].children[0].value
-                newRow['project'] = row.cells[8].innerHTML.trim().replace(/<[^>]*>?/gm, '');
-                newRow['allocation'] = row.cells[9].innerHTML.trim().replace(/<[^>]*>?/gm, '');
-                newRow['screensize'] = row.cells[10].innerHTML.trim().replace(/<[^>]*>?/gm, '');
+                newRow['model'] = row.cells[6].innerHTML.trim().replace(/<[^>]*>?/gm, '')
+                newRow['inuse'] = row.cells[7].children[0].value === 'true'
+                newRow['project'] = row.cells[8].innerHTML.trim().replace(/<[^>]*>?/gm, '')
+                newRow['allocation'] = row.cells[9].innerHTML.trim().replace(/<[^>]*>?/gm, '')
+                newRow['screensize'] = row.cells[10].innerHTML.trim().replace(/<[^>]*>?/gm, '')
 
                 break
             }
@@ -303,8 +308,8 @@
 
             {#each deviceData as device, x}
                 <tr>
-                    <td style="width:130px; min-width:130px">{device.deviceid}</td>
-                    <td style="width:110px; min-width:110px">{device.devicecode}</td>
+                    <td style="width:130px; min-width:130px; background-color: #f5f5f5" id="deviceIdRow">{device.deviceid}</td>
+                    <td style="width:110px; min-width:110px; background-color: #f5f5f5" id="deviceCodeRow">{device.devicecode}</td>
                     <td style="width:50px; min-width:50px">{device.passcode}</td>
                     <td style="width:60px; min-width:60px">{device.os}</td>
                     <td style="width:60px; min-width:60px">{device.osversion}</td>
@@ -314,12 +319,6 @@
 
                     <td id="inUseField" style="width:58px; min-width:55px">
                         <select class="in_use_disabled" contenteditable="false">
-                            
-                            {#if device.inuse != 'true' || device.inuse != 'false'}
-                                <option value="" selected="selected"></option>
-                            {:else}
-                                <option value=""></option>
-                            {/if}
 
                             {#if device.inuse === true}
                                 <option value="true" selected="selected">true</option>
@@ -425,8 +424,8 @@
         border: 1px solid rgb(0, 0, 0);
         outline: none !important;
         border:1px solid black;
-        border-right: 7px solid red;
-        border-left: 7px solid red;
+        border-right: 7px solid black;
+        border-left: 7px solid black;
         border-top: 1px solid black;
         border-bottom: 1px solid black;
     }
