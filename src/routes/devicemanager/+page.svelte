@@ -321,13 +321,13 @@
                                 <option value=""></option>
                             {/if}
 
-                            {#if device.inuse === 'true'}
+                            {#if device.inuse === true}
                                 <option value="true" selected="selected">true</option>
                             {:else}
                                 <option value="true">true</option>
                             {/if}
 
-                            {#if device.inuse === 'false'}
+                            {#if device.inuse === false}
                                 <option value="false" selected="selected">false</option>
                             {:else}
                                 <option value="false">false</option>
