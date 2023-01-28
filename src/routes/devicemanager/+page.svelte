@@ -15,7 +15,7 @@
     let editMode = false
 
     // table display test
-    let tableHeaders = ["ID","CODE","PASSCODE", "OS","VERSION","DATE CONFIRMED",
+    let tableHeaders = ["ID","CODE","PIN", "OS","VERSION","UPDATED",
         "MODEL","IN USE?","PROJECT", "WITH", "SCREEN"]
 
     // functions
@@ -32,6 +32,8 @@
         filter = input.value.toUpperCase()
         table = document.getElementById("devicetable")
         tr = table.getElementsByTagName("tr")
+        
+        var ctr = 0
 
         // depends on column order
         for (i = 1; i < tr.length; i++) {
@@ -47,9 +49,15 @@
                 txtValue = td
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
                     tr[i].style.display = ""
+                    ctr++
                 } else {
                     tr[i].style.display = "none"
                 }
+
+                if(ctr === 0) 
+                    tr[0].style.display = "none"
+                else
+                    tr[0].style.display = ""
             }
         }
 
@@ -266,16 +274,10 @@
 
     <div class="div-search">
         <input type="text" id="inputBar" class="inputBar" on:keyup={() => {filterTable()}} 
-            placeholder="Searchhhh">
+            placeholder="Search">
     </div>
 
     <div class="div-table">
-
-        <!--
-        <div class="table_bar">
-
-        </div>
-        -->
 
         <table id="devicetable" class="devicetable">
             <tr>
@@ -286,24 +288,24 @@
 
             {#each deviceData as device, x}
                 <tr>
-                    <td style="width:40px;">{device.deviceid}</td>
-                    <td>{device.devicecode}</td>
-                    <td style="width:20px;">{device.passcode}</td>
-                    <td>{device.os}</td>
-                    <td>{device.osversion}</td>
-                    <td id="date" style="width:10px;"><input class="dateInput" type="date" disabled=true value={device.dateconfirmed}></td>
-                    <td>{device.model}</td>
-                    <td>{device.inuse}</td>
-                    <td>{device.project}</td>
-                    <td>{device.allocation}</td>
-                    <td>{device.screensize}</td>
-                    <td id="editField" style="width:37px;" class="editField" contenteditable="false">
+                    <td style="width:130px; min-width:130px">{device.deviceid}</td>
+                    <td style="width:110px; min-width:110px">{device.devicecode}</td>
+                    <td style="width:50px; min-width:50px">{device.passcode}</td>
+                    <td style="width:60px; min-width:60px">{device.os}</td>
+                    <td style="width:60px; min-width:60px">{device.osversion}</td>
+                    <td id="date" style="width:115px; min-width:115px"><input class="dateInput" type="date" disabled=true value={device.dateconfirmed}></td>
+                    <td style="width:150px; min-width:150px">{device.model}</td>
+                    <td style="width:55px; min-width:55px">{device.inuse}</td>
+                    <td style="width:120px; min-width:120px">{device.project}</td>
+                    <td style="width:120px; min-width:120px">{device.allocation}</td>
+                    <td style="width:60px; min-width:60px">{device.screensize}</td>
+                    <td id="editField" style="width:37px; min-width:37px" class="editField" contenteditable="false">
                         <label class="switch">
                             <input type="checkbox" on:click={() => { handleEditMode(device, x) }}>
                             <span class="slider"></span>
                         </label>
                     </td>
-                    <td id="restoreBtn" class="restoreBtn" style="width:19px;"><button hidden class="button-54" role="button" on:click={() => { restoreRow(device, x) }}>&#8634;</button></td>
+                    <td id="restoreBtn" class="restoreBtn" style="width:40px; min-width:40px"><button hidden class="button-54" role="button" on:click={() => { restoreRow(device, x) }}>&#8634;</button></td>
                 </tr>
             {:else}
                 <p>Failed to retrieve database records. Check with admin.</p>
@@ -335,17 +337,6 @@
         pointer-events: none;
     }
 
-    div {
-        /*border:1px solid black;*/
-    }
-
-    .table_bar {
-        background-color: black;
-        width: 10px;
-        height: 100px;
-        float: left;
-    }
-
     .inputBar {
         margin: auto;
         display: block;
@@ -357,7 +348,10 @@
         font-size: 16px;
         padding: 12px 20px 12px 40px;
         border: 1px solid rgb(0, 0, 0);
-        margin-bottom: 10px;
+        border-right: 1px solid black;
+        border-left: 1px solid black;
+        transition: 0.1s;
+        max-width: 700px;
     }
 
     input::placeholder {
@@ -376,18 +370,13 @@
         font-size: 16px;
         padding: 12px 20px 12px 40px;
         border: 1px solid rgb(0, 0, 0);
-        margin-bottom: 10px;
         outline: none !important;
         border:1px solid black;
+        border-right: 7px solid red;
+        border-left: 7px solid red;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
     }
-
-    /*borders*/
-    /*
-    .div-search {
-        border:1px solid black;
-    }
-
-    /*table*/
 
     .editField {
         border: 0px;
@@ -404,9 +393,11 @@
     }
 
     .devicetable {
-        width: 100%;
         overflow: hidden;
         white-space: nowrap;
+        margin-right: auto;
+        margin-left: auto;
+        font-size: 14px;
     }
 
     .hdrRow {
@@ -434,7 +425,8 @@
         color: #000;
         cursor: pointer;
         border: 1px solid;
-        padding: 0.25em 0.5em;
+        /*padding: 0.25em 0.5em;*/
+        padding: 0em 0.25em;
         box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px;
         position: relative;
         user-select: none;
@@ -448,12 +440,13 @@
         left: 3px;
     }
 
+    /*
     @media (min-width: 768px) {
         .button-54 {
-            /*padding: 0.25em 0.75em;*/
             padding: 0em 0.25em;
         }
     }
+    */
 
     /*checkbox*/
     .switch {
