@@ -9,24 +9,21 @@
     import { page } from '$app/stores'
     import { navigating } from '$app/stores';
     import NProgress from 'nprogress';
-    import ProgressBar from 'svelte-progress-bar'
     import '$lib/assets/nprogress.css';
-
-    let progress
 
     NProgress.configure({
 		minimum: 0.16
 	});
 
     $: {
-		if ($navigating) {
+        if ($navigating) {
             console.log("moving...")
-			NProgress.start();
-		}
-		if (!$navigating) {
+            NProgress.start();
+        }
+        if (!$navigating) {
             console.log("moving...")
-			NProgress.done();
-		}
+            NProgress.done();
+        }
 	}
 
     onMount(() => {
@@ -40,56 +37,44 @@
         }
     })
 
+    // using enhance as nprogress ignores logout if not used
     const handleLogougProgress = ({ form, data, action, cancel }) => {
 
-        // POST does nothing anyway
-        // Enhanced handler with callback appears to trigger NProgress fsr
-        //progress.start()
-
-        return async ({ result, update }) => {
-            //progress.complete()  
-
-            update()
+        return async ({ result, update }) => { 
+            update() 
         }
     }
 
 </script>
 
-<ProgressBar bind:this={progress} />
-
-<div class="div_hdr">
-    <h1 class="header">DEVICE <span class="wavy">TRACKR</span> 2.0</h1>
-    <p class="sub_header">aGlkaW5nIGJlaGluZCBicnV0YWxpc3RpYyBkZXNpZ24=</p>
-</div>
-
+<div class="nav_btn_cntnr">
     {#if $page.url.pathname  ==='/devicemanager'}
-        <div class="div_btnctnr">
-            <form action="/logout" method="POST" use:enhance={handleLogougProgress}><button class="btn_nav">logout</button></form>
-            <form action="/details"><button class="btn_nav">about</button></form>
-        </div>
+        <form action="/logout" method="POST" use:enhance={handleLogougProgress}><button class="btn_nav">logout</button></form>
+        <form action="/details"><button class="btn_nav">about</button></form>
     {/if}
 
     {#if $page.url.pathname  ==='/details'}
-        <div class="div_btnctnr">
-            <form action="/logout" method="POST"><button class="btn_nav">logout</button></form>
-            <form action="/devicemanager"><button class="btn_nav">devices</button></form>
-        </div>
+        <form action="/logout" method="POST"><button class="btn_nav">logout</button></form>
+        <form action="/devicemanager"><button class="btn_nav">devices</button></form>
     {/if}
+</div>
+
+<div class="div_hdr">
+    <p class="header_title">QA DEVICE <span>TRACKER</span></p>
+</div>
+
+<div class="div_hrdbtm">
+
+</div>
 
 <Toaster />
 <div class="toastWrapper"><SvelteToast options={{ dismissable: false, reversed: true, intro: { y: 192 } }} /></div>
 <slot></slot>
 
-<footer>
-    <div class="footerDiv">
-        <p class="footerText">Copyright 2023, all rights <span class="wavy">riserved</span></p>
-    </div>
-</footer>
-
 <style>
 
     :global(.svelte-progress-bar, .svelte-progress-bar-leader) {
-	background-color: #ff0000;
+	    background-color: #ff0000;
 	}
 
 	:global(.svelte-progress-bar-leader) {
@@ -123,33 +108,28 @@
 		text-decoration-line: underline;
 		text-decoration-style: wavy;
 		text-decoration-color: red;
+        text-shadow: 2px 2px black;
 	}
 
-    .header {
+    .header_title {
+        font-size: 35px;
+        font-family: 'Arial Black','Helvetica Bold',sans-serif;
+        color: rgb(255, 255, 255);
         text-align: center;
-        font-family: 'Allerta Stencil';
-        font-size: 30px;
-        letter-spacing: 40px;
-        text-shadow: 5px 5px rgb(241, 241, 241);
+        margin-top: 0px;
+        letter-spacing: 20px;
+        text-shadow: 2px 2px black;
     }
 
-    .sub_header {
-		vertical-align: top;
-        text-align: left;
-		font-size: 12px;
-		color: rgb(110, 110, 110);
-		letter-spacing: 5px;
-        margin-top: -45px;
-        text-align: center;
-        padding-bottom: 40px;
-    }
-
-    .div_btnctnr {
+    .div_hdr {
+        background-color: white;
         width: 100%;
-        height: 20px;            
-        position: absolute;
-        top: 0;
-        right: 0;
+        height: 50px;
+        overflow: hidden;
+    }
+
+    .div_hrdbtm {
+        height: 10px;
     }
 
     .btn_nav {
@@ -159,11 +139,20 @@
         text-transform: uppercase;
         color: #000;
         cursor: pointer;
-        background-color: white;
-        border: 1px solid;
+        background-color: rgb(255, 255, 255);
         float: right;
-        z-index: 10;
         border: 0px;
+        transition: 0.5s;
+    }
+
+    .btn_nav_res {
+        font-family: Arial !important;
+        font-size: 12px;
+        text-decoration: none;
+        text-transform: uppercase;
+        color: #000;
+        cursor: pointer;
+        background-color: white;
         transition: 0.5s;
     }
 
@@ -171,28 +160,26 @@
         color: red;
     }
 
-    footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 200px;
-        background: rgb(235,235,235);
-        background: linear-gradient(0deg, rgba(235,235,235,1) 0%, rgba(255,255,255,1) 100%, rgba(0,212,255,1) 100%); 
+    .btn_nav_res:hover {
+        color: red;
     }
 
-    .footerDiv {
-        margin-top: 10px;
-        width: 90%;
-        height: 2px;
-        background-color: black;
-        margin: 0 auto;
+    .nav_btn_cntnr {
+        margin-top: 0px;
+        height: 18px;
     }
 
-    .footerText {
-        text-align: center;
-        padding-top: 5px;
-        font-family: Arial !important;
-    }
+    @media (max-width: 700px) {
+        .div_hdr {
+            position: fixed;
+            background-color: white;
+            height: 100px;
+            overflow: hidden;
+        }
 
+        .div_hrdbtm {
+            margin-bottom: 100px;
+        }
+    }
+    
 </style>
