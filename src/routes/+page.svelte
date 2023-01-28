@@ -32,13 +32,7 @@
 		}
 	}
 
-	const tempToast = () => {
-		toast.push('test')
-	}
-
 </script>
-
-<button on:click={() => { tempToast() }}>trigger toast</button>
 
 <div class="parent_container">
 	<div class="wrapper">
