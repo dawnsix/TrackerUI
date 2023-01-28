@@ -68,7 +68,15 @@
 </div>
 
 <Toaster />
-<div class="toastWrapper"><SvelteToast options={{ dismissable: false, reversed: true, intro: { y: 192 } }} /></div>
+<div class="toastWrapper"><SvelteToast options={
+        { 
+            dismissable: false, 
+            reversed: true, 
+            intro: { y: 192 } 
+        }
+    }/>
+</div>
+
 <slot></slot>
 
 <style>
@@ -169,7 +177,7 @@
         height: 18px;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 770px) {
         .div_hdr {
             position: fixed;
             background-color: white;

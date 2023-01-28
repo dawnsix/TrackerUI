@@ -16,7 +16,7 @@
 			if(result.type === 'failure') {
 
 				toast.pop()
-				toast.push(`<p>&#10060; Invalid credentials</p>`, { duration: 3000 })
+				toast.push(`<p style="font">Invalid credentials</p>`, { duration: 3000 })
 
 				form.reset()
 				focusRef.focus(); 
@@ -25,7 +25,7 @@
 			if(result.status == 303) {
 
 				toast.pop()
-				toast.push(`<p>&#9989; Login success, redirecting...</p>`, { duration: 3000 })
+				toast.push(`<p>&#9989; Login success, redirecting...</p>`, { duration: 500 })
 				update()
 			}
 			
@@ -59,7 +59,7 @@
 						required />
 					</fieldset>
 				<div>
-					<button class="btn btn-lg btn-primary pull-xs-right" type="submit">SUbmi;t</button>
+					<button class="btn btn-lg btn-primary pull-xs-right" type="submit">submit</button>
 				</div>
 			</form>
 		</div>
@@ -67,54 +67,56 @@
 
 		</div>
 
-		<p class="login_txt_grp_a">LOGIN</p>
-		 
-		<section class="custom-kontakt">
-			<div class="barcode-box">
-				<div class="barcode-stripes">
-					<span class="stripe-1"></span>
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-3"></span>
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span> 
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-2"></span>
-					<span class="stripe-3"></span>
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span> 
-					<span class="stripe-3"></span>
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-3"></span> 
-					<span class="stripe-2"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span>
-					<span class="stripe-1"></span>
-					<span class="sig1">A</span>
-					<span class="sig2">U</span>
-					<span class="sig3">T</span>
-					<span class="sig4">H</span>
-					<span class="sig5">N</span> 
-					<span class="sig6">T</span> 
-					<span class="sig7">I</span>
-					<span class="sig8">C</span>
-					<span class="sig9">8</span>
+		<div class="logo_holder">
+			<p class="login_txt_grp_a">LOGIN</p>
+			
+			<section class="custom-kontakt">
+				<div class="barcode-box">
+					<div class="barcode-stripes">
+						<span class="stripe-1"></span>
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-3"></span>
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span> 
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-2"></span>
+						<span class="stripe-3"></span>
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span> 
+						<span class="stripe-3"></span>
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-3"></span> 
+						<span class="stripe-2"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span>
+						<span class="stripe-1"></span>
+						<span class="sig1">A</span>
+						<span class="sig2">U</span>
+						<span class="sig3">T</span>
+						<span class="sig4">H</span>
+						<span class="sig5">N</span> 
+						<span class="sig6">T</span> 
+						<span class="sig7">I</span>
+						<span class="sig8">C</span>
+						<span class="sig9">8</span>
+					</div>
 				</div>
-			</div>
-		</section>
+			</section>
+		</div>
 
 		<div class="sso_bar"></div>
 
@@ -140,7 +142,7 @@
 	}
 
 	:global(.svelte-progress-bar, .svelte-progress-bar-leader) {
-	background-color: #ff0000;
+		background-color: #ff0000;
 	}
 
 	:global(.svelte-progress-bar-leader) {
@@ -253,6 +255,34 @@
 
 	p{
 		margin: 20px 0px;
+	}
+
+	@media (max-height: 850px) {
+		
+		.sso_bar {
+			display: none;
+		}
+
+		.wrapper {
+			height: 180px;
+		}
+	}
+
+	@media (max-width: 850px) {
+		
+		.logo_holder, .sso_bar, .logo_grp {
+			display: none;
+		}
+
+		.form_area {
+			margin-top: -60px;
+		}
+
+		.wrapper {
+			width: 400px;
+			display: flex;
+			justify-content: center;
+		}
 	}
 
 	/* barcode */	
