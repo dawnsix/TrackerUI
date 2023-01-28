@@ -17,8 +17,36 @@ const simulateUpdateDeviceRecord = async (device) => {
 const updateDeviceRecord = async (payload) => {
 
     // Add SS data validation before processing
+    /*
+    {
+        "deviceid":"355777911790644",
+        "devicecode":"transpire.20.01",
+        "passcode":"0000",
+        "os":"iPhone",
+        "osversion":"15.1",
+        "dateconfirmed":"2022-06-09",
+        "model":"iPhone 13 Pro Max",
+        "inuse":"true",
+        "project":"service vic",
+        "allocation":"matt.aX",
+        "screensize":"MAC"
+     }
+     */
+
+     payload.deviceid = payload.deviceid.trim().replace(/<[^>]*>?/gm, '');
+     payload.devicecode = payload.devicecode.trim().replace(/<[^>]*>?/gm, '');
+     payload.passcode = payload.passcode.trim().replace(/<[^>]*>?/gm, '');
+     payload.os = payload.os.trim().replace(/<[^>]*>?/gm, '');
+     payload.osversion = payload.osversion.trim().replace(/<[^>]*>?/gm, '');
+     payload.dateconfirmed = payload.dateconfirmed
+     payload.model = payload.model.trim().replace(/<[^>]*>?/gm, '');
+     payload.inuse = payload.inuse === 'true'
+     payload.project = payload.project.trim().replace(/<[^>]*>?/gm, '');
+     payload.allocation = payload.allocation.trim().replace(/<[^>]*>?/gm, '');
+     payload.screensize = payload.screensize.trim().replace(/<[^>]*>?/gm, '');
 
     console.log(JSON.stringify(payload))
+
  
     const res = await fetch(`https://${SECRET_HOST_DOMAIN}/live/updatestatus`, {
         method: 'POST',
