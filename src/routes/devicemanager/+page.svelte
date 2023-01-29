@@ -20,8 +20,8 @@
 
     // functions
     onMount(async () => {
-
-	});
+        document.getElementById("inputBar").value = ""
+	})
 
     const filterTable = () => {
 
@@ -292,9 +292,12 @@
 
     {#if data.session}
 
-    <div class="div-search">
-        <input type="text" id="inputBar" class="inputBar" on:keyup={() => {filterTable()}} 
+    <div class="div-search ">
+        
+        <input type="search" id="inputBar" class="inputBar" 
+            on:keyup={() => {filterTable()}} 
             placeholder="Search">
+        
     </div>
 
     <div class="div-table">
@@ -387,6 +390,10 @@
         border: 0px solid ;
         background-color: white;
         pointer-events: none;
+    }
+
+    .div-search {
+        padding-bottom: 15px;;
     }
 
     .inputBar {
@@ -566,5 +573,8 @@
     .dateInput {
         font-family: Arial !important;
     }
+
+    /* input search */
+    
 
 </style>
