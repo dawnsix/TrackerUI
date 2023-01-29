@@ -375,7 +375,7 @@
         -o-filter: blur(2px);
         -ms-filter: blur(2px);
         filter: blur(2px);
-        background-color: #ccc;
+        background-color: #f5f5f5;
         pointer-events: none;
     }
 
