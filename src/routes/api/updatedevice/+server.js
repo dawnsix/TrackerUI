@@ -16,6 +16,8 @@ const simulateUpdateDeviceRecord = async (device) => {
 
 const updateDeviceRecord = async (payload) => {
 
+    //TODO: run through Zod for schema check
+
      payload.deviceid = payload.deviceid.trim().replace(/<[^>]*>?/gm, '')
      payload.devicecode = payload.devicecode.trim().replace(/<[^>]*>?/gm, '')
      payload.passcode = payload.passcode.trim().replace(/<[^>]*>?/gm, '')

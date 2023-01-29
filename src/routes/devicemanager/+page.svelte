@@ -16,7 +16,7 @@
 
     // table display test
     let tableHeaders = ["ID","CODE","PIN", "OS","VERSION","UPDATED",
-        "MODEL","IN USE?","PROJECT", "WITH", "SCREEN"]
+        "MODEL","IN USE?","PROJECT", "WITH", "SCREEN", "EDIT"]
 
     // functions
     onMount(async () => {
@@ -294,8 +294,9 @@
 
     <div class="div-search ">
         
-        <input type="search" id="inputBar" class="inputBar" 
-            on:keyup={() => {filterTable()}} 
+        <input type="input" id="inputBar" class="inputBar" 
+            on:keyup={() => {filterTable()}}
+            on:clear={() => {}}
             placeholder="Search">
         
     </div>
